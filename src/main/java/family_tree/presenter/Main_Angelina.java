@@ -1,20 +1,33 @@
-package family_tree;
+package family_tree.presenter;
 
 import family_tree.family_tree_Angelina.FamilyTree;
-import family_tree.Writer.FileHandler;
-import family_tree.Writer.WriterHandler;
 import family_tree.human.Gender;
 import family_tree.human.Human;
+import family_tree.model.FamilyTreeModel;
+import family_tree.presenter.FamilyTreePresenter;
+import family_tree.presenter.FamilyTreePresenterImpl;
+import family_tree.view.FamilyTreeView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main_Angelina {
-    final static String filePath = "src/family_tree/Writer/tree.txt";
+public class Main_Angelina implements FamilyTreeView {
+    private static FamilyTreePresenter presenter;
 
     public static void main(String[] args) {
-        // Создание бабушек и дедушек по линии Гомера
+        presenter = new FamilyTreePresenterImpl();
+        Main_Angelina main = new Main_Angelina();
+        presenter.attachView(main);
+
+        // Создание членов семьи
+        main.createFamily();
+
+        presenter.detachView();
+    }
+
+    private void createFamily() {
+        // Создание бабушек и дедушек
         Human grandMotherHomer = new Human("Mona Simpson", Gender.FEMALE, LocalDate.of(1940, 7, 11));
         Human grandFatherHomer = new Human("Abraham Jay-Jebediah 'Abe' Simpson", Gender.MALE, LocalDate.of(1939, 8, 8));
 
@@ -49,25 +62,18 @@ public class Main_Angelina {
         familyMembers.add(lisa);
         familyMembers.add(maggie);
 
-        // Создание и вывод семейного дерева
-        FamilyTree<Human> familyTree = new FamilyTree<>(familyMembers);
-        String familyTreeInfo = familyTree.displayFamilyTree();
+        // Создание FamilyTreeModel
+        FamilyTreeModel familyTreeModel = new FamilyTreeModel(familyMembers);
+        presenter.saveFamilyTree(); // Сохранение семейного дерева
+    }
 
-        // Сохранение и загрузка семейного дерева
-        FamilyTree<Human> tree = load();
-        save(tree);
-
-        // Вывод информации о семейном дереве
+    @Override
+    public void displayFamilyTree(String familyTreeInfo) {
         System.out.println(familyTreeInfo);
     }
 
-    private static FamilyTree<Human> load() {
-        FileHandler fileHandler = new FileHandler(filePath);
-        return (FamilyTree<Human>) fileHandler.read();
-    }
-
-    private static void save(FamilyTree<Human> familyTree) {
-        FileHandler fileHandler = new FileHandler(filePath);
-        fileHandler.save(familyTree);
+    @Override
+    public void showError(String message) {
+        System.err.println(message);
     }
 }
