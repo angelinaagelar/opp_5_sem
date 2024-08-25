@@ -18,7 +18,7 @@ public class FamilyTreePresenterImpl implements FamilyTreePresenter {
     @Override
     public void attachView(FamilyTreeView view) {
         this.view = view;
-        loadFamilyTree(); // Загружаем деревo, когда вью присоединяется
+        loadFamilyTree();
     }
 
     @Override
